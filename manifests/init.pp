@@ -14,6 +14,7 @@ class quantum (
   $allow_bulk             = 'True',
   $allow_overlapping_ips  = 'False',
   $control_exchange       = 'quantum',
+  $rpc_backend            = 'quantum.openstack.common.rpc.impl_kombu',
   $rabbit_host            = 'localhost',
   $rabbit_port            = '5672',
   $rabbit_user            = 'guest',
@@ -49,21 +50,35 @@ class quantum (
     'DEFAULT/allow_bulk':             value => $allow_bulk;
     'DEFAULT/allow_overlapping_ips':  value => $allow_overlapping_ips;
     'DEFAULT/control_exchange':       value => $control_exchange;
-    'DEFAULT/rabbit_host':            value => $rabbit_host;
-    'DEFAULT/rabbit_port':            value => $rabbit_port;
-    'DEFAULT/rabbit_userid':          value => $rabbit_user;
-    'DEFAULT/rabbit_password':        value => $rabbit_password;
-    'DEFAULT/rabbit_virtual_host':    value => $rabbit_virtual_host;
+    'DEFAULT/rpc_backend':            value => $rpc_backend;
+  }
+
+  if $rabbit_host {
+    quantum_config { 'DEFAULT/rabbit_host': value => $rabbit_host }
+  } else {
+    Quantum_config <<| title == 'rabbit_host' |>>
+  }
+
+  if $rpc_backend == 'quantum.openstack.common.rpc.impl_kombu' {
+    quantum_config {
+      'DEFAULT/rabbit_virtual_host': value => $rabbit_virtual_host;
+      'DEFAULT/rabbit_port':         value => $rabbit_port;
+      'DEFAULT/rabbit_userid':       value => $rabbit_user;
+      'DEFAULT/rabbit_password':     value => $rabbit_password;
+    }
   }
 
   # Any machine using Quantum / OVS endpoints with certain nova networking configs will
   # have protetion issues writing unexpected files unless qemu is changed appropriately.
+  # TODO This should be moved to nova::compute::quantum.
+  # Only needed when using nova.virt.libvirt.vif.LibvirtOpenVswitchDriver vif driver. 
   @file { "/etc/libvirt/qemu.conf":
     ensure => present,
     notify => Exec[ '/etc/init.d/libvirt-bin restart'],
     source => 'puppet:///modules/quantum/qemu.conf',
   }
   exec { '/etc/init.d/libvirt-bin restart':
- 	  refreshonly => true,
- 	}
+    refreshonly => true,
+  }
+
 }

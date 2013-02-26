@@ -4,6 +4,7 @@ class quantum::agents::l3 (
   $debug                        = 'False',
   $auth_tenant                  = 'service',
   $auth_user                    = 'quantum',
+  $auth_url		        = 'http://localhost:35357/v2.0',
   $auth_password                = 'password',
   $external_network_bridge      = 'br-ex',
   $use_namespaces               = 'True',
@@ -31,6 +32,7 @@ class quantum::agents::l3 (
     'DEFAULT/admin_tenant_name':              value => $auth_tenant;
     'DEFAULT/admin_user':                     value => $auth_user;
     'DEFAULT/admin_password':                 value => $auth_password;
+    'DEFAULT/auth_url':                       value => $auth_url;
     'DEFAULT/use_namespaces':                 value => $use_namespaces;
     'DEFAULT/root_helper':                    value => $root_helper;
     'DEFAULT/interface_driver':               value => $interface_driver;

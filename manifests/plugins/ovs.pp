@@ -5,17 +5,10 @@
 
 class quantum::plugins::ovs (
   $package_ensure       = 'present',
-
   $sql_connection       = 'sqlite:////var/lib/quantum/ovs.sqlite',
   $sql_max_retries      = 10,
   $reconnect_interval   = 2,
-
   $tenant_network_type  = 'vlan',
-
-  # NB: don't need tunnel ID range when using VLANs,
-  # *but* you do need the network vlan range regardless of type,
-  # because the list of networks there is still important
-  # even if the ranges aren't specified
   $network_vlan_ranges  = 'physnet1:1000:2000',
   $tunnel_id_ranges     = '1:1000',
 ) {
@@ -54,7 +47,6 @@ class quantum::plugins::ovs (
     'DATABASE/sql_connection':      value => $sql_connection;
     'DATABASE/sql_max_retries':     value => $sql_max_retries;
     'DATABASE/reconnect_interval':  value => $reconnect_interval;
-    'OVS/network_vlan_ranges':      value => $network_vlan_ranges;
     'OVS/tenant_network_type':      value => $tenant_network_type;
   }
 
@@ -63,8 +55,11 @@ class quantum::plugins::ovs (
       # this is set by the plugin and the agent - since the plugin node has the agent installed
       # we rely on it setting it.
       # TODO(ijw): do something with a virtualised node
-      # 'OVS/enable_tunneling':   value => 'True';
-      'OVS/tunnel_id_ranges':   value => $tunnel_id_ranges;
+      'OVS/tunnel_id_ranges':       value => $tunnel_id_ranges;
     }
-  }
+  } else {
+      quantum_plugin_ovs {
+        'OVS/network_vlan_ranges':  value => $network_vlan_ranges;
+      }
+    }
 }
