@@ -33,9 +33,9 @@ class quantum::keystone::auth (
   if $configure_endpoint {
     keystone_endpoint { "${region}/$auth_name":
       ensure       => present,
-      public_url   => "http://${public_address}:${port}",
-      admin_url    => "http://${admin_address}:${port}",
-      internal_url => "http://${internal_address}:${port}",
+      public_url   => "http://${public_address}:${port}/",
+      admin_url    => "http://${admin_address}:${port}/",
+      internal_url => "http://${internal_address}:${port}/",
     }
   }
 }
