@@ -80,6 +80,7 @@ class quantum::agents::dhcp (
     'DEFAULT/dhcp_driver':        value => $dhcp_driver;
     'DEFAULT/use_namespaces':     value => $use_namespaces;
     'DEFAULT/root_helper':        value => $root_helper;
+    'DEFAULT/dhcp_lease_time':    value => $dhcp_lease_time;
   }
 
   if $::quantum::params::dhcp_agent_package {
